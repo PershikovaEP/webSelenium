@@ -175,5 +175,13 @@ public class ChromeTest {
         assertEquals(expected, actual.trim());
     }
 
-  
+    @Test
+    void shouldChangeColorOfTextWhenSendingAnEmptyCheckbox () {
+        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванов Иван");
+        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889988");
+        driver.findElement(By.cssSelector("[type = button]")).click();
+        String expected = "rgba(255, 92, 92, 1)";
+        String actual = driver.findElement(By.cssSelector("[data-test-id = agreement].input_invalid")).getCssValue("color");
+        assertEquals(expected, actual.trim());
+    }
 }
