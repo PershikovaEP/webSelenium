@@ -36,7 +36,7 @@ public class ChromeTest {
     }
 
     @Test
-    void shouldHappyPath() throws InterruptedException {
+    void shouldHappyPath() {
         driver.get("http://localhost:9999");
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванов Иван");
         driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
