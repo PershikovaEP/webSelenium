@@ -37,7 +37,7 @@ public class ChromeTest {
     }
 
 //    Требования к содержимому полей://
-//    Поле Фамилия и имя - разрешены только русские буквы, дефисы и пробелы.
+//    Поле Фамилия и имя - разрешены только русские буквы, дефисы и пробелы. (ё выдает ошибку)
 //    Поле телефон - только цифры (11 цифр), символ + (на первом месте).
 //    Флажок согласия должен быть выставлен
 
@@ -60,6 +60,17 @@ public class ChromeTest {
         driver.findElement(By.cssSelector("[type = button]")).click();
         String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
         String actual = driver.findElement(By.cssSelector("[data-test-id = order-success]")).getText();
+        assertEquals(expected, actual.trim());
+    }
+
+    @Test
+    void shouldErrorInTheNameWihtRussionYo() {
+        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванова Алёна");
+        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
+        driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
+        driver.findElement(By.cssSelector("[type = button]")).click();
+        String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
+        String actual = driver.findElement(By.cssSelector("[data-test-id = name].input_invalid .input__sub")).getText();
         assertEquals(expected, actual.trim());
     }
 
@@ -175,13 +186,23 @@ public class ChromeTest {
         assertEquals(expected, actual.trim());
     }
 
+//    цвет может измениться, поэтому проверяем видимость элемента
+//    @Test
+//    void shouldChangeColorOfTextWhenSendingAnEmptyCheckbox () {
+//        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванов Иван");
+//        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889988");
+//        driver.findElement(By.cssSelector("[type = button]")).click();
+//        String expected = "rgba(255, 92, 92, 1)";
+//        String actual = driver.findElement(By.cssSelector("[data-test-id = agreement].input_invalid")).getCssValue("color");
+//        assertEquals(expected, actual.trim());
+//    }
+
     @Test
-    void shouldChangeColorOfTextWhenSendingAnEmptyCheckbox () {
+    void shouldBeVisibleCheckboxClassInputInvalidWhenSendingAnEmptyCheckbox () {
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванов Иван");
         driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889988");
         driver.findElement(By.cssSelector("[type = button]")).click();
-        String expected = "rgba(255, 92, 92, 1)";
-        String actual = driver.findElement(By.cssSelector("[data-test-id = agreement].input_invalid")).getCssValue("color");
-        assertEquals(expected, actual.trim());
+        Boolean actual = driver.findElement(By.cssSelector("[data-test-id = agreement].input_invalid")).isDisplayed();
+        assertEquals(true, actual);
     }
 }
