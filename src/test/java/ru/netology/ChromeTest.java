@@ -41,6 +41,8 @@ public class ChromeTest {
 //    Поле Фамилия и имя - разрешены только русские буквы, дефисы и пробелы.
 //    Поле телефон - только цифры (11 цифр), символ + (на первом месте).
 //    Флажок согласия должен быть выставлен
+//    Условия: если какое-то поле не заполнено, или заполнено неверно, то при нажатии на кнопку "Продолжить"
+//    должны появляться сообщения об ошибке (будет подсвечено только первое неправильно заполненное поле)
 
     @Test
     void shouldHappyPath() {
@@ -54,7 +56,7 @@ public class ChromeTest {
     }
 
     @Test
-    void shouldHappyPath1() {
+    void shouldHappyPathWhenInNameHyphenate() {
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванова Анна-Мария");
         driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
         driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
@@ -65,7 +67,7 @@ public class ChromeTest {
     }
 
     @Test
-    void shouldErrorInTheNameWihtRussionYo() {
+    void shouldHappyPathWhenInTheNameWihtRussionYo() {
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванова Алёна");
         driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
         driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
@@ -75,8 +77,19 @@ public class ChromeTest {
         assertEquals(expected, actual.trim());
     }
 
-//    Условия: если какое-то поле не заполнено, или заполнено неверно, то при нажатии на кнопку "Продолжить"
-//    должны появляться сообщения об ошибке (будет подсвечено только первое неправильно заполненное поле)
+// ограничение длины поля фамилия и имя не установлено
+    @Test
+    void shouldHappyPathWhenNameIs1CharLength() {
+        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("И");
+        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
+        driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
+        driver.findElement(By.cssSelector("[type = button]")).click();
+        String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
+        String actual = driver.findElement(By.cssSelector("[data-test-id = order-success]")).getText();
+        assertEquals(expected, actual.trim());
+    }
+
+
     @Test
     void shouldErrorInTheNameInLatin() {
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Ivanov");
@@ -101,7 +114,6 @@ public class ChromeTest {
 
     @Test
     void shouldErrorInTheNameIsNotFilled() {
-        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("");
         driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79998889999");
         driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
         driver.findElement(By.cssSelector("[type = button]")).click();
@@ -113,7 +125,6 @@ public class ChromeTest {
     @Test
     void shouldErrorInThePhoneIsNotFilled() {
         driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Иванов Иван");
-        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("");
         driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
         driver.findElement(By.cssSelector("[type = button]")).click();
         String expected = "Поле обязательно для заполнения";
@@ -175,11 +186,9 @@ public class ChromeTest {
         String actual = driver.findElement(By.cssSelector("[data-test-id = phone].input_invalid .input__sub")).getText();
         assertEquals(expected, actual.trim());
     }
-   // при двух незаполенных/неправильно заполненных полях будет подсвечено только первое неправильно заполненное поле
+    // при двух незаполенных/неправильно заполненных полях будет подсвечено только первое неправильно заполненное поле
     @Test
     void shouldErrorInTheNameAndThePhoneIsNotFilled() {
-        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("");
-        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("");
         driver.findElement(By.cssSelector("[data-test-id = agreement]")).click();
         driver.findElement(By.cssSelector("[type = button]")).click();
         String expected = "Поле обязательно для заполнения";
